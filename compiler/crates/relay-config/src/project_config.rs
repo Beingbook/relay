@@ -350,12 +350,18 @@ impl ProjectConfig {
                 let resolver_module_location =
                     pathdiff::diff_paths(module_path, definition_artifact_location_path).unwrap();
 
-                let module_file_name = module_location.file_name().unwrap_or_else(|| {
-                    panic!(
-                        "expected module_location: {:?} to have a file name",
-                        module_location
-                    )
-                });
+                let module_file_name = module_location
+                    .file_name()
+                    .unwrap_or_else(|| {
+                        panic!(
+                            "expected module_location: {:?} to have a file name",
+                            module_location
+                        )
+                    })
+                    .to_string_lossy();
+                // to supress TypeScript module resolution issue,
+                // it's required to omit the file extension in import path
+                let module_file_name = module_file_name.trim_end_matches(".ts");
 
                 resolver_module_location
                     .join(module_file_name)
